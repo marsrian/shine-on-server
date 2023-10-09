@@ -73,7 +73,7 @@ async function run() {
       next();
     };
 
-    // users related apis
+    // users related apis:
     app.get("/users", verifyJWT, verifyAdmin, async (req, res) => {
       const result = await usersCollection.find().toArray();
       res.send(result);
