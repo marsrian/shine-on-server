@@ -50,6 +50,7 @@ async function run() {
 
     const usersCollection = client.db("shine-on").collection("users");
     const jewelryCollection = client.db("shine-on").collection("jewelry");
+    const addCartCollection = client.db("shine-on").collection("addCart");
 
     // JWT Token:
     app.post("/jwt", (req, res) => {
@@ -160,6 +161,50 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await jewelryCollection.findOne(query);
+      res.send(result);
+    });
+
+    // ------------------------Add To Cart----------------------:
+    // user added jewelry to AddToCart List:
+    app.post("/cart", async (req, res) => {
+      const item = req.body;
+      console.log(item);
+      const result = await addCartCollection.insertOne(item);
+      res.send(result);
+    });
+
+    // user get jewelry data from cart:
+    app.get("/cart", verifyJWT, async (req, res) => {
+      const email = req.query.email;
+      if (!email) {
+        res.send([]);
+      }
+
+      const decodedEmail = req.decoded.email;
+      if (email !== decodedEmail) {
+        return res
+          .status(403)
+          .send({ error: true, message: "forbidden access" });
+      }
+
+      const query = { email: email };
+      const result = await addCartCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // user get selected Jewelry data from cart:
+    app.get("/cart/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await addCartCollection.findOne(query);
+      res.send(result);
+    });
+
+    // user delete selected jewelry data from cart:
+    app.delete("/cart/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await addCartCollection.deleteOne(query);
       res.send(result);
     });
 
