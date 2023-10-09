@@ -142,7 +142,7 @@ async function run() {
       res.send(result);
     });
 
-    // Jewelry Post:
+    // Jewelry Post: 
     app.post("/jewelry", async (req, res) => {
       const newJewelry = req.body;
       const result = await jewelryCollection.insertOne(newJewelry);
